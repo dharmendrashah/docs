@@ -80,6 +80,41 @@ After an email address is verified, the user will automatically be redirected to
     protected $redirectTo = '/dashboard';
 
 <a name="events"></a>
+
+## Register Controller
+In order to send the email after successful registration you can do this workaround:
+
+at App\Http\Controllers\Auth\RegisterController
+
+change this:
+<code>
+    protected function create(array $data)
+    {
+        return User::create([
+            'name' => $data['name'],
+            'email' => $data['email'],
+            'password' => Hash::make($data['password']),
+        ]);
+    }
+    </code>
+
+    
+ to this:
+ <code>
+ protected function create(array $data)
+    {
+        $user = User::create([
+            'name' => $data['name'],
+            'email' => $data['email'],
+            'password' => Hash::make($data['password']),
+        ]);
+
+        $user->sendEmailVerificationNotification();
+
+        return $user;
+  }
+    </code>
+    
 ## Events
 
 Laravel dispatches [events](/docs/{{version}}/events) during the email verification process. You may attach listeners to these events in your `EventServiceProvider`:
